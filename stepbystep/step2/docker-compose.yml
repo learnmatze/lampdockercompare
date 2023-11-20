@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  db: # mysql container
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: lamp_docker_compose
+      MYSQL_USER: lamp_user
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+  www: # php at apache container
+    image: php:8.1.1-apache   
+    volumes:
+      - "./:/var/www/html"     
+    ports:
+      - 80:80
+      - 443:443

@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  db: # mysql container
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: lamp_docker_compose
+      MYSQL_USER: lamp_user
+      MYSQL_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d"
+  www: # php at apache container
+    image: php_container #php:8.1.1-apache    
+    volumes:
+      - ./php_container:/var/www/html      
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:80   
+    depends_on:
+      - db 
+  phpmyadmin: # mysql admin container
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    depends_on:
+      - db 
+  ftp: # ftp container
+    image: stilliard/pure-ftpd:hardened
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"   
+    volumes:
+      - ./php_container:/home/username/
+    environment:
+      PUBLICHOST: "0.0.0.0"
+      FTP_USER_NAME: "username"
+      FTP_USER_PASS: "password"
+      FTP_USER_HOME: "/home/username"
+    restart: always
